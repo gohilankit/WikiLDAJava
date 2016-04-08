@@ -1,5 +1,7 @@
 package preprocessing;
 
+import java.io.IOException;
+
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.ml.Pipeline;
@@ -105,14 +107,13 @@ public class Preprocessor {
 	
 	public static String preprocess(String text){
 		//TODO
-	/*	1. LowerCase 
-	 * 	2. Stemming
-	 * http://stackoverflow.com/questions/5391840/stemming-english-words-with-lucene
-	 * https://github.com/master/spark-stemming
-	 * 
-	 * 
-	 */	
-		text = text.toLowerCase();		
+
+		try {
+			text = Stemmer.stem(text.toLowerCase());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return text.toLowerCase();
+		}		
 		
 		return text;
 	}
