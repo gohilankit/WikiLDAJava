@@ -15,7 +15,6 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.types.DataTypes;
 import org.sweble.wikitext.engine.EngineException;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
@@ -94,8 +93,6 @@ public class Preprocessor {
 		 PipelineModel model = pipeline.fit(fileDF);
 		 
 		 DataFrame tempDF = model.transform(fileDF);
-		 
-		 tempDF.select("text").javaRDD().saveAsTextFile("results");
 		 
 		 //Separate CountVectorizerModel to get the vocabulary
 		 CountVectorizerModel cvModel = new CountVectorizer()
