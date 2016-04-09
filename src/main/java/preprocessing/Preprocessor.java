@@ -15,6 +15,7 @@ import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataTypes;
 import org.sweble.wikitext.engine.EngineException;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
@@ -62,7 +63,15 @@ public class Preprocessor {
 			 }	 
 		 });
 		 
-		 DataFrame fileDF = sqlContext.createDataFrame(result, Document.class);
+		 JavaRDD<Document> legitOnly = result.filter(new Function<Document, Boolean>(){
+
+			public Boolean call(Document doc) throws Exception {
+				String text = doc.getText();
+				return !text.contains("wtredirect");
+			}
+		 });
+		 
+		 DataFrame fileDF = sqlContext.createDataFrame(legitOnly, Document.class);
 		 
 		// Configure an ML pipeline
 		 RegexTokenizer tokenizer = new RegexTokenizer()
@@ -86,6 +95,8 @@ public class Preprocessor {
 		 
 		 DataFrame tempDF = model.transform(fileDF);
 		 
+		 tempDF.select("text").javaRDD().saveAsTextFile("results");
+		 
 		 //Separate CountVectorizerModel to get the vocabulary
 		 CountVectorizerModel cvModel = new CountVectorizer()
 				  .setVocabSize(LDAConstants.VOCAB_SIZE)
@@ -106,7 +117,9 @@ public class Preprocessor {
 	}
 	
 	public static String preprocess(String text){
-		//TODO
+		
+		//Remove numbers
+		text = text.replaceAll("\\d+(?:[.,]\\d+)*\\s*", "");
 
 		try {
 			text = Stemmer.stem(text.toLowerCase());

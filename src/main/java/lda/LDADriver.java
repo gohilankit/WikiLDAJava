@@ -6,10 +6,9 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.mllib.clustering.DistributedLDAModel;
-import org.apache.spark.mllib.clustering.EMLDAOptimizer;
 import org.apache.spark.mllib.clustering.LDA;
 import org.apache.spark.mllib.clustering.LDAModel;
+import org.apache.spark.mllib.clustering.OnlineLDAOptimizer;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.SQLContext;
 
@@ -49,10 +48,10 @@ public class LDADriver {
 		    String[] vocabulary = params.getVocabulary();
 		    int actualVocabSize = params.getVocabulary().length;
 		    
-		   /* OnlineLDAOptimizer optimizer = new OnlineLDAOptimizer()//
-                    .setMiniBatchFraction( 0.05 + 1.0 / actualCorpusSize);	*/
+		    OnlineLDAOptimizer optimizer = new OnlineLDAOptimizer()//
+                    .setMiniBatchFraction( 0.05 + 1.0 / actualCorpusSize);	
 		    
-		    EMLDAOptimizer optimizer = new EMLDAOptimizer();
+		   // EMLDAOptimizer optimizer = new EMLDAOptimizer();
 		    
 		    // Cluster the documents into three topics using LDA
 		    LDA lda = new LDA()
@@ -64,7 +63,7 @@ public class LDADriver {
 		    
 		    LDAModel ldaModel = lda.run(corpus);
 		    
-		   Tuple2<int[], double[]>[] topics = ((DistributedLDAModel) ldaModel).describeTopics(10);
+		   Tuple2<int[], double[]>[] topics = ldaModel.describeTopics(10);
 
 		    int topicCount = topics.length; 
 		    for(int t=0; t<topicCount; t++){
