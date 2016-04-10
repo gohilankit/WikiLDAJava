@@ -6,11 +6,21 @@ import org.apache.spark.mllib.linalg.Vector;
 public class LDAParams {
 	private String[] vocabulary;
 	private JavaRDD<Vector> countVectors;
+	private long totalTokens;
 	
-	public LDAParams(String[] vocabulary, JavaRDD<Vector> countVectors) {
+	public long getTotalTokens() {
+		return totalTokens;
+	}
+
+	public void setTotalTokens(long totalTokens) {
+		this.totalTokens = totalTokens;
+	}
+
+	public LDAParams(String[] vocabulary, JavaRDD<Vector> countVectors, long totalTokens) {
 		super();
 		this.vocabulary = vocabulary;
 		this.countVectors = countVectors;
+		this.totalTokens = totalTokens;
 	}
 	
 	public String[] getVocabulary() {

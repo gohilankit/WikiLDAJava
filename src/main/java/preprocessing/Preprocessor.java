@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
@@ -108,10 +109,24 @@ public class Preprocessor {
 		            }
 		          });
 		 
-		 //Calculate actual num tokens   
+		 //Calculate actual num tokens
+		 //First count tokens in each RDD and then reduce to sum all
+		 long totalTokens = countVectors.map(new Function<Vector, Long>(){
+
+				public Long call(Vector tokens) throws Exception {
+					return new Long(tokens.numActives());
+				}
+			 }).reduce(new Function2<Long, Long, Long>(){
+					public Long call(Long v1, Long v2) throws Exception {
+						return v1+v2;
+					}
+				 });
+
 		
-		return new LDAParams(cvModel.vocabulary(), countVectors);
+		return new LDAParams(cvModel.vocabulary(), countVectors, totalTokens);
 	}
+	
+	
 	
 	public static String preprocess(String text){
 		

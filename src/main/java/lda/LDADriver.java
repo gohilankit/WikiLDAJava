@@ -41,12 +41,11 @@ public class LDADriver {
 		          }
 		        }
 		    ));
-			
-		    corpus.cache();
 		    
 		    long actualCorpusSize = corpus.count();
 		    String[] vocabulary = params.getVocabulary();
 		    int actualVocabSize = params.getVocabulary().length;
+		    long totalTokens = params.getTotalTokens();
 		    
 		    OnlineLDAOptimizer optimizer = new OnlineLDAOptimizer()//
                     .setMiniBatchFraction( 0.05 + 1.0 / actualCorpusSize);	
@@ -78,6 +77,12 @@ public class LDADriver {
 		    	}
 		    	System.out.println("");
 		    }
+		    
+		    System.out.println("Training Corpus Size : " + actualCorpusSize);
+		    System.out.println("Vocabulary Size : " + actualVocabSize);
+		    System.out.println("Total Tokens: " + totalTokens);
+		    
+		   
 
 		 //Remove duplicates from words vector so that the indices are in line with count vector
 /*		 UDF1 stringSet = new UDF1<Seq<String>, Seq<String>>() {
